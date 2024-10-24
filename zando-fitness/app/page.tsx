@@ -1,7 +1,7 @@
-import { FitnessLoginComponent } from "@/components/fitness-login";
+import { HomePage } from "@/components/home-page";
 
 export default function Home() {
   return (
-    <FitnessLoginComponent />
+    <HomePage />
   );
 }
