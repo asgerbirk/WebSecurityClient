@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dumbbell } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,31 +8,125 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from 'next/link'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { registrationSchema, RegistrationSchema } from '@/types/signup'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
+import { Toaster } from './ui/toaster'
+import { Membership } from '@/types/membership'
 
 export function FitnessRegistrationComponent() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    dateOfBirth: '',
-    membershipId: '',
-    emergencyContact: '',
+  const [isLoading, setIsLoading] = useState(false)
+  const [memberships, setMemberships] = useState<Membership[]>([]); // State for memberships
+  const router = useRouter()
+  const { toast } = useToast()
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<RegistrationSchema>({
+    resolver: zodResolver(registrationSchema)
   })
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }))
-  }
+  // Fetch memberships from the API
+  useEffect(() => {
+    const fetchMemberships = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ZANDO_API}/memberships`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch memberships');
+        }
+        const data = await response.json();
+        setMemberships(data);
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Could not load memberships. Please try again later.',
+          variant: 'destructive',
+        });
+      }
+    };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    // Handle registration logic here
-    console.log('Registration submitted:', formData)
+    fetchMemberships();
+  }, [toast]);
+
+  const onSubmit = async (data: RegistrationSchema) => {
+    console.log("hej")
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ZANDO_API}/register`, {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      console.log(data)
+      const result = await response.json()
+      console.log(result)
+      switch (response.status) {
+        case 200:
+          toast({
+            title: 'Registration successful',
+            description: 'Welcome to Zando Fitness!',
+            duration: 3000,
+            variant: 'default'
+          })
+          router.push('/login')
+          break
+
+        case 201:
+          toast({
+            title: 'Registration successful',
+            description: 'Welcome to Zando Fitness!',
+            duration: 3000,
+            variant: 'default'
+          })
+          router.push('/login')
+          break
+
+        case 400:
+          toast({
+            title: 'Registration failed',
+            description: result.message || 'Invalid input. Please check your details.',
+            duration: 3000
+          })
+          break
+
+        case 409:
+          toast({
+            title: 'Registration failed',
+            description: result.message || 'An account with this email already exists.',
+            duration: 3000
+          })
+          break
+
+        case 500:
+          toast({
+            title: 'Server error',
+            description: 'An unexpected error occurred. Please try again later.',
+            duration: 3000
+          })
+          break
+
+        default:
+          toast({
+            title: 'Registration failed',
+            description: result.message || 'An unexpected error occurred'
+          })
+      }
+    } catch (error) {
+      toast({
+        title: 'Network error',
+        description: 'Unable to connect to the server. Please check your internet connection.'
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -48,98 +142,130 @@ export function FitnessRegistrationComponent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input 
-                  id="firstName" 
-                  name="firstName" 
-                  value={formData.firstName} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="firstName"
+                  {...register('firstName')}
+                  placeholder="John"
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input 
-                  id="lastName" 
-                  name="lastName" 
-                  value={formData.lastName} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="lastName"
+                  {...register('lastName')}
+                  placeholder="Doe"
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  name="email" 
-                  type="email" 
-                  value={formData.email} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="email"
+                  type="email"
+                  {...register('email')}
+                  placeholder="john@example.com"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register('password')}
+                  placeholder="At least 8 characters"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
-                <Input 
-                  id="phone" 
-                  name="phone" 
-                  type="tel" 
-                  value={formData.phone} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...register('phone')}
+                  placeholder="+1234567890"
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                )}
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="address">Address</Label>
-                <Input 
-                  id="address" 
-                  name="address" 
-                  value={formData.address} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="address"
+                  {...register('address')}
+                  placeholder="123 Fitness Street"
                 />
+                {errors.address && (
+                  <p className="text-red-500 text-sm">{errors.address.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                <Input 
-                  id="dateOfBirth" 
-                  name="dateOfBirth" 
-                  type="date" 
-                  value={formData.dateOfBirth} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  {...register('dateOfBirth')}
                 />
+                {errors.dateOfBirth && (
+                  <p className="text-red-500 text-sm">{errors.dateOfBirth.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="membershipId">Membership Type</Label>
-                <Select name="membershipId" onValueChange={(value) => setFormData(prev => ({ ...prev, membershipId: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select membership" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">Basic</SelectItem>
-                    <SelectItem value="2">Premium</SelectItem>
-                    <SelectItem value="3">VIP</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="membershipId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select membership" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {memberships.map((membership) => (
+                          <SelectItem key={membership.MembershipID} value={String(membership.MembershipID)}>
+                            {membership.MembershipName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.membershipId && (
+                  <p className="text-red-500 text-sm">{errors.membershipId.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                <Input 
-                  id="emergencyContact" 
-                  name="emergencyContact" 
-                  type="tel" 
-                  value={formData.emergencyContact} 
-                  onChange={handleInputChange} 
-                  required 
+                <Input
+                  id="emergencyContact"
+                  {...register('emergencyContact')}
+                  placeholder="Name and phone (e.g., Jane Doe, +123456789)"
                 />
+                {errors.emergencyContact && (
+                  <p className="text-red-500 text-sm">{errors.emergencyContact.message}</p>
+                )}
               </div>
             </div>
-            <Button className="w-full mt-6" type="submit">
-              Register
+            <Button
+              className="w-full mt-6"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Registering...' : 'Register'}
             </Button>
           </form>
         </CardContent>
@@ -154,6 +280,7 @@ export function FitnessRegistrationComponent() {
           </div>
         </CardFooter>
       </Card>
+      <Toaster />
     </div>
   )
 }
