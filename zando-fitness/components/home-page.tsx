@@ -1,30 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { Dumbbell, Users, Calendar, TrendingUp } from 'lucide-react'
+import { Users, Calendar, TrendingUp } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Dumbbell className="h-8 w-8" />
-            <span className="text-2xl font-bold">Zando Fitness</span>
-          </div>
-          <nav>
-            <ul className="flex space-x-4">
-              <li><Link href="#" className="hover:underline">Home</Link></li>
-              <li><Link href="#" className="hover:underline">Classes</Link></li>
-              <li><Link href="#" className="hover:underline">Membership</Link></li>
-              <li><Link href="#" className="hover:underline">Contact</Link></li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
       <main className="flex-grow">
         <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20">
           <div className="container mx-auto text-center">
