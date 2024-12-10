@@ -9,6 +9,10 @@
 # testing
 /coverage
 
+# Webstorm
+.idea
+secret.key
+
 # next.js
 /.next/
 /out/

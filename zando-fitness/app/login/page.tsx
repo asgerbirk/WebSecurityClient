@@ -1,7 +1,7 @@
-import { FitnessLoginComponent } from "@/components/fitness-login";
+import LoginPage from "@/components/fitness-login";
 
-export default function Login() {
+export default async function Login() {
   return (
-    <FitnessLoginComponent />
+    <LoginPage />
   );
 }
