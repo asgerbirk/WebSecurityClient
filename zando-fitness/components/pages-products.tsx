@@ -15,13 +15,13 @@ function ProductCard({ product }: { product: Product }) {
         <CardDescription>{product.Description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
-        <Image
-          src={`/placeholder.svg?height=200&width=200&text=${encodeURIComponent(product.ProductName)}`}
-          alt={product.ProductName}
-          width={200}
-          height={200}
-          className="w-full h-48 object-cover rounded-md mb-4"
-        />
+          <Image
+              src={`https://placehold.co/400x400?text=${encodeURIComponent(product.ProductName)}&font=Roboto`}
+              alt={product.ProductName}
+              width={200}
+              height={200}
+              className="w-full h-48 object-cover rounded-md mb-4"
+          />
         <p className="text-2xl font-bold">${product.Price}</p>
         <p className="text-sm text-gray-500">In stock: {product.StockQuantity}</p>
       </CardContent>

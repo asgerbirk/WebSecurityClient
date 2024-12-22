@@ -1,7 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import { Navbar } from '@/components/navbar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 const centers = [
@@ -28,7 +27,6 @@ const centers = [
 export function About() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">About Zando Fitness</h1>

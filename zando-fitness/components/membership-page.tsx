@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import {useEffect, useState} from "react";
 import {useToast} from "@/hooks/use-toast";
 import {Membership} from "@/types/membership";
+import {Toaster} from "@/components/ui/toaster";
 
 export function Memberships() {
   const [memberships, setMemberships] = useState<Membership[]>([]); // State for memberships
@@ -90,6 +91,7 @@ export function Memberships() {
             </Button>
           </div>
         </section>
+        <Toaster/>
       </main>
 
       <footer className="bg-gray-800 text-white py-8">

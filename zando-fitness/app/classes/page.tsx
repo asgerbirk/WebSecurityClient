@@ -1,15 +1,15 @@
-import {MemberProfile} from "@/components/member-profile";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/lib/auth";
 import {redirect} from "next/navigation";
+import {Classes} from "@/components/pages-classes";
 
 
-export default async function MyInformationPage() {
+export default async function ClassesPage() {
     const session = await getServerSession(authOptions)
     if (!session) {
         redirect('/login');
     }
     return (
-        <MemberProfile userId={session?.user.userId} />
+        <Classes memberId={session?.user.memberId} />
     );
 }

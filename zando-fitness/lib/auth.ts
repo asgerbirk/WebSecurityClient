@@ -43,8 +43,8 @@ export const authOptions: NextAuthOptions = {
                     if (!accessToken) {
                         throw new Error('Access token missing in cookies');
                     }
-                    // Return basic user details (you won't have tokens directly here due to httpOnly)
-                    const user = { id: 'user-id', email: credentials?.email }; // Mock user object; replace as necessary
+
+                    const user = { id: 'user-id', email: credentials?.email };
                     return { ...user, accessToken };
                 } catch (error) {
                     console.error("Error during authorization:", error);
@@ -64,8 +64,9 @@ export const authOptions: NextAuthOptions = {
             if (token.accessToken) {
                 // Use type assertion or optional chaining to handle potential undefined
                 const decodedToken = jwtDecode<{
-                    userId: string;
+                    userId: number;
                     email: string;
+                    memberId: number;
                     name: string;
                     role: string;
                     exp: number;
@@ -73,6 +74,7 @@ export const authOptions: NextAuthOptions = {
 
                 token.userId = decodedToken.userId;
                 token.email = decodedToken.email;
+                token.memberId = decodedToken.memberId;
                 token.name = decodedToken.name;
                 token.role = decodedToken.role;
                 token.exp = decodedToken.exp;
@@ -81,13 +83,19 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             session.token = token.token; // Raw access token
-            session.user.id = token.userId;
+            session.user.userId = token.userId;
             session.user.email = token.email;
+            session.user.memberId = token.memberId;
             session.user.name = token.name;
             session.user.role = token.role;
             return session;
         },
     },
+    session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60,
+        updateAge: 24 * 60 * 60, // 24 hours
+    }
 };
 
 export default NextAuth(authOptions);

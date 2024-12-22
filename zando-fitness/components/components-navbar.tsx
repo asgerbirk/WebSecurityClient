@@ -10,8 +10,9 @@ const navItems = [
   { name: 'Home', href: '/' },
   { name: 'Classes', href: '/classes' },
   { name: 'Membership', href: '/membership' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
+    {name: 'Products', href: '/products' },
+  // { name: 'About', href: '/about' },
+  // { name: 'Contact', href: '/contact' },
 ]
 
 function AuthButton() {
