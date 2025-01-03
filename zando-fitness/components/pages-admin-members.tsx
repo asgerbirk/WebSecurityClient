@@ -9,15 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { format } from 'date-fns'
 import { Search, Edit, Trash2 } from 'lucide-react'
 import {useToast} from "@/hooks/use-toast";
+import {Member} from "@/types/user-info";
 
-interface Member {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  membershipType: string
-  joinDate: string
-}
 
 export function Members() {
   const [isLoading, setIsLoading] = useState(true)
@@ -40,6 +33,8 @@ export function Members() {
           description: 'Could not load memberships. Please try again later.',
           variant: 'destructive',
         });
+      } finally {
+        setIsLoading(false); // Ensure isLoading is set to false regardless of success or failure
       }
     };
 
@@ -47,21 +42,69 @@ export function Members() {
   }, [toast]);
 
   const filteredMembers = members.filter(member => 
-    member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    member.person.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.person.LastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.person.Email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const handleEdit = (id: number) => {
-    // Implement edit functionality
-    console.log(`Edit member with id: ${id}`)
-  }
+  // const handleDelete = async (id: number) => {
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_ZANDO_API}/members/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //
+  //     if (!response.ok) {
+  //       throw new Error("Failed to delete member");
+  //     }
+  //
+  //     setMembers(prevMembers => prevMembers.filter(member => member.MemberID !== id));
+  //
+  //     toast({
+  //       title: "Success",
+  //       description: "Member deleted successfully.",
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Could not delete member. Please try again later.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+  //
+  // const handleEdit = async (id: number, updatedMember: Partial<Member>) => {
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_ZANDO_API}/members/${id}`, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(updatedMember),
+  //     });
+  //
+  //     if (!response.ok) {
+  //       throw new Error("Failed to update member");
+  //     }
+  //
+  //     const updatedData = await response.json();
+  //
+  //     setMembers(prevMembers =>
+  //         prevMembers.map(member =>
+  //             member.MemberID === id ? { ...member, ...updatedData } : member
+  //         )
+  //     );
+  //
+  //     toast({
+  //       title: "Success",
+  //       description: "Member updated successfully.",
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Could not update member. Please try again later.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
 
-  const handleDelete = (id: number) => {
-    // Implement delete functionality
-    console.log(`Delete member with id: ${id}`)
-    setMembers(members.filter(member => member.id !== id))
-  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -105,17 +148,17 @@ export function Members() {
                 </TableHeader>
                 <TableBody>
                   {filteredMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell>{`${member.firstName} ${member.lastName}`}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>{member.membershipType}</TableCell>
-                      <TableCell>{format(new Date(member.joinDate), 'MMM d, yyyy')}</TableCell>
+                    <TableRow key={member.MemberID}>
+                      <TableCell>{`${member?.person?.FirstName} ${member?.person?.LastName}`}</TableCell>
+                      <TableCell>{member?.person?.Email}</TableCell>
+                      <TableCell>{member?.membership?.MembershipName}</TableCell>
+                      <TableCell>{format(new Date(member.JoinDate), 'MMM d, yyyy')}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => handleEdit(member.id)}>
+                          <Button variant="outline" size="icon">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="destructive" size="icon" onClick={() => handleDelete(member.id)}>
+                          <Button variant="destructive" size="icon">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
