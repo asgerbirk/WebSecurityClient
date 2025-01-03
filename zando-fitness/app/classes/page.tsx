@@ -9,7 +9,7 @@ export default async function ClassesPage() {
     if (!session) {
         redirect('/login');
     }
-    // console.log(session?.maxAge);
+    // console.log(session?.token);
     return (
         <Classes memberId={session?.user.memberId} />
     );

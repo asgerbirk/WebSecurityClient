@@ -80,7 +80,6 @@ export const authOptions: NextAuthOptions = {
                     role: string;
                     exp: number;
                 }>(token.accessToken as string);
-
                 // Assign common properties
                 token.userId = decodedToken.userId;
                 token.email = decodedToken.email;
@@ -97,8 +96,7 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             // Add the raw access token to the session
-            session.token = token.token;
-
+            session.token = token.accessToken;
             // Populate session user details
             session.user.userId = token.userId;
             session.user.email = token.email;
