@@ -11,16 +11,21 @@ import Link from 'next/link'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registrationSchema, RegistrationSchema } from '@/types/signup'
-import { useRouter } from 'next/navigation'
+import {redirect, useRouter} from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { Toaster } from './ui/toaster'
 import { Membership } from '@/types/membership'
+import {useSession} from "next-auth/react";
 
 export function FitnessRegistrationComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [memberships, setMemberships] = useState<Membership[]>([]); // State for memberships
   const router = useRouter()
   const { toast } = useToast()
+  const session = useSession()
+  if(session.status == "authenticated"){
+    redirect("/")
+  }
 
   const {
     register,
@@ -50,11 +55,10 @@ export function FitnessRegistrationComponent() {
       }
     };
 
-    fetchMemberships();
+    fetchMemberships().then(r => r);
   }, [toast]);
 
   const onSubmit = async (data: RegistrationSchema) => {
-    console.log("hej")
     setIsLoading(true)
 
     try {
@@ -65,9 +69,7 @@ export function FitnessRegistrationComponent() {
         },
         body: JSON.stringify(data)
       })
-      console.log(data)
       const result = await response.json()
-      console.log(result)
       switch (response.status) {
         case 200:
           toast({
