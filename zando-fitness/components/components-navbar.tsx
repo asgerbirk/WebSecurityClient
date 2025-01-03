@@ -6,16 +6,6 @@ import { Dumbbell, Menu, X, CircleUserRound } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {signOut, useSession} from "next-auth/react";
 
-
-// const navItems = [
-//   { name: 'Home', href: '/' },
-//   { name: 'Classes', href: '/classes' },
-//   { name: 'Membership', href: '/membership' },
-//     {name: 'Products', href: '/products' },
-//   // { name: 'About', href: '/about' },
-//   // { name: 'Contact', href: '/contact' },
-// ]
-
 function AuthButton() {
   const { data: session } = useSession();
   if (session) {
@@ -42,7 +32,7 @@ function AuthButton() {
 }
 
 export function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const { data: session } = useSession();
     const navItems = session?.user?.role === "ADMIN" ? [
         { name: 'Home', href: '/' },
