@@ -226,7 +226,7 @@ export function FitnessRegistrationComponent() {
                   <p className="text-red-500 text-sm">{errors.dateOfBirth.message}</p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" id="membership">
                 <Label htmlFor="membershipId">Membership Type</Label>
                 <Controller
                   name="membershipId"
