@@ -5,7 +5,7 @@ describe("Login page", () => {
 
     it("Login with Credentials", () => {
         const username = "user06@test.com";
-        const password = "12345678";
+        const password = "Ab12345678&";
 
         // Fill in the login form and submit
         cy.get('input[name="email"]').type(username); // Replace with the actual email input selector

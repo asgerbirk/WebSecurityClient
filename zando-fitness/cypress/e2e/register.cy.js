@@ -1,5 +1,5 @@
 describe("Register page", () => {
-    before(() => {
+    beforeEach(() => {
         cy.visit("http://localhost:3000/register"); // Adjust if the route differs
     });
 
@@ -9,11 +9,11 @@ describe("Register page", () => {
             lastName: "Doe",
             email: `testuser${Date.now()}@example.com`, // Unique email for each test
             password: "Password123&",
-            phone: "+1234567890",
+            phone: "20202020",
             address: "123 Fitness Street",
             dateOfBirth: "01-01-1990",
-            membershipId: "1", // Adjust according to your membership IDs
-            emergencyContact: "Jane Doe, +123456789",
+            membershipId: 1, // Adjust according to your membership IDs
+            emergencyContact: "Jane Doe",
         };
 
         // Fill out the registration form
@@ -26,7 +26,7 @@ describe("Register page", () => {
         cy.get('input[id="dateOfBirth"]').click(); // Open the date picker if applicable
         cy.get('input[id="dateOfBirth"]')
             .clear()
-            .type('1998-05-12')
+            .type('1998-01-01')
             .trigger('change')
             .trigger('blur');
 
@@ -35,7 +35,7 @@ describe("Register page", () => {
         // Select membership type
         cy.get('div#membership')
             .find('select')
-            .select(1,{force: true}) // Replace with the actual membership name
+            .select(user.membershipId,{force: true})
 
 
         cy.get('input[id="emergencyContact"]').type(user.emergencyContact);
@@ -44,7 +44,7 @@ describe("Register page", () => {
         cy.get('button[type="submit"]').click();
 
         // Assert successful registration
-        cy.url().should("include", "/welcome"); // Replace with your redirect path
+        cy.url({ timeout: 5000 }).should("include", "/login"); // Replace with your redirect path
         cy.contains("Welcome to Zando Fitness").should("be.visible"); // Adjust text accordingly
     });
 
@@ -53,9 +53,9 @@ describe("Register page", () => {
         cy.get('button[type="submit"]').click();
 
         // Assert error messages are displayed
-        cy.contains("First Name is required").should("be.visible");
-        cy.contains("Last Name is required").should("be.visible");
-        cy.contains("Email is required").should("be.visible");
-        cy.contains("Password is required").should("be.visible");
+        cy.contains("First name must be at least 2 characters").should("be.visible");
+        cy.contains("Last name must be at least 2 characters").should("be.visible");
+        cy.contains("Invalid email address").should("be.visible");
+        cy.contains("Password must be at least 8 characters").should("be.visible");
     });
 });
