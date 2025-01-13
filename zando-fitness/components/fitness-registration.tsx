@@ -60,7 +60,7 @@ export function FitnessRegistrationComponent() {
 
   const onSubmit = async (data: RegistrationSchema) => {
     setIsLoading(true)
-
+    data.dateOfBirth = new Date(data.dateOfBirth).toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_ZANDO_API}/register`, {
         method: 'POST',
